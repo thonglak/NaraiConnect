@@ -14,8 +14,13 @@ COPY packages/shared ./packages/shared
 COPY apps/api ./apps/api
 COPY apps/web ./apps/web
 
-# Build SolidStart bundle. Bun's `.bin/vinxi` symlink shim breaks relative
-# imports inside vinxi's CLI, so invoke the real cli.mjs directly.
+# Build SolidStart bundle. APP_BASE_PATH and VITE_API_URL must be available
+# at build time (vinxi/Vite bake them into the bundle). Bun's `.bin/vinxi`
+# symlink shim breaks relative imports, so invoke the real cli.mjs directly.
+ARG APP_BASE_PATH=
+ARG VITE_API_URL=
+ENV APP_BASE_PATH=$APP_BASE_PATH
+ENV VITE_API_URL=$VITE_API_URL
 WORKDIR /app/apps/web
 RUN bun /app/node_modules/vinxi/bin/cli.mjs build
 

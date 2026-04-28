@@ -18,6 +18,9 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        APP_BASE_PATH: ${APP_BASE_PATH:-}
+        VITE_API_URL: ${VITE_API_URL:-}
     container_name: ncadm_web_prod
     env_file: .env
     environment:
