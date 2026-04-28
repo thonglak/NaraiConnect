@@ -17,7 +17,7 @@ const STATE_MAX_AGE = 600; // 10 minutes
 const cookieDefaults = {
   httpOnly: true,
   sameSite: 'lax' as const,
-  path: '/',
+  path: env.APP_BASE_PATH || '/',
   secure: isProd,
 };
 

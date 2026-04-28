@@ -21,6 +21,10 @@ export const env = {
   API_PUBLIC_URL: optional('API_PUBLIC_URL', 'http://localhost:3100'),
   WEB_PUBLIC_URL: optional('WEB_PUBLIC_URL', 'http://localhost:3001'),
 
+  // Path prefix when served behind a reverse proxy (e.g. "/sso_man").
+  // Empty string in dev means cookie path stays at "/".
+  APP_BASE_PATH: optional('APP_BASE_PATH', ''),
+
   SESSION_SECRET: required('SESSION_SECRET'),
   SESSION_COOKIE_NAME: optional('SESSION_COOKIE_NAME', 'ncadm_sid'),
   SESSION_MAX_AGE_SECONDS: Number(optional('SESSION_MAX_AGE_SECONDS', '28800')),
