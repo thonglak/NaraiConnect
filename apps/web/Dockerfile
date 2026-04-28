@@ -21,4 +21,4 @@ RUN bun /app/node_modules/vinxi/bin/cli.mjs build
 
 ENV NODE_ENV=production
 EXPOSE 3001
-CMD ["bun", "run", "start"]
+CMD ["bun", "/app/node_modules/vinxi/bin/cli.mjs", "start", "--port", "3001"]
