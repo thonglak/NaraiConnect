@@ -14,9 +14,10 @@ COPY packages/shared ./packages/shared
 COPY apps/api ./apps/api
 COPY apps/web ./apps/web
 
-# Build SolidStart bundle
+# Build SolidStart bundle. Bun's `.bin/vinxi` symlink shim breaks relative
+# imports inside vinxi's CLI, so invoke the real cli.mjs directly.
 WORKDIR /app/apps/web
-RUN bun run build
+RUN bun /app/node_modules/vinxi/bin/cli.mjs build
 
 ENV NODE_ENV=production
 EXPOSE 3001
