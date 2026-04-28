@@ -49,5 +49,7 @@ export const loginUrl = `${import.meta.env.VITE_API_URL ?? 'http://localhost:310
 
 export const logout = async (): Promise<void> => {
   await v1.auth.logout.post();
-  window.location.href = '/';
+  // Full nav (not Solid Router) so cookies + SPA state are dropped cleanly.
+  // Use BASE_URL so we land on the app's home, not the domain root.
+  window.location.href = import.meta.env.BASE_URL ?? '/';
 };

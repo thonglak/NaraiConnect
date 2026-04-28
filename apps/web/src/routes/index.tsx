@@ -25,12 +25,14 @@ export default function Home() {
               <div class="mt-6 text-sm text-neutral-500">กำลังพาไปหน้า Dashboard…</div>
             </Match>
             <Match when={!me.loading}>
-              <a
-                href={loginUrl}
+              <button
+                onClick={() => {
+                  window.location.href = loginUrl;
+                }}
                 class="mt-6 inline-block w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700"
               >
                 เข้าสู่ระบบด้วย NaraiConnect
-              </a>
+              </button>
             </Match>
           </Switch>
         </Suspense>
