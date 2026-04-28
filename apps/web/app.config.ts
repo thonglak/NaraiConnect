@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 const basePath = (process.env.APP_BASE_PATH ?? '').replace(/\/$/, '');
 
 export default defineConfig({
+  ssr: false,
   ...(basePath
     ? {
         server: {
