@@ -21,6 +21,11 @@ const cookieDefaults = {
   secure: isProd,
 };
 
+// Elysia's cookie.remove() doesn't repeat the Path attribute, so a cookie
+// scoped to /sso_man stays in the browser. Explicitly set the matching
+// Path with maxAge=0 to force the browser to drop it.
+const clearedCookie = { ...cookieDefaults, value: '', maxAge: 0 };
+
 export const authPlugin = new Elysia({ prefix: '/auth' })
   .get('/login', ({ cookie, redirect }) => {
     const state = randomHex(16);
@@ -41,21 +46,21 @@ export const authPlugin = new Elysia({ prefix: '/auth' })
       // Stale callback URL replay: user has a valid signed session already,
       // skip re-doing the OAuth flow and just send them to the app.
       if (verifySession(existingToken)) {
-        cookie[STATE_COOKIE].remove();
+        cookie[STATE_COOKIE].set(clearedCookie);
         return redirect(`${env.WEB_PUBLIC_URL}/dashboard`, 302);
       }
 
       // No state cookie at all (replay / bookmark / expired) — bounce to home
       // so the user can click login again. Throwing JSON here is hostile.
       if (!expected) {
-        cookie[env.SESSION_COOKIE_NAME].remove();
+        cookie[env.SESSION_COOKIE_NAME].set(clearedCookie);
         return redirect(env.WEB_PUBLIC_URL, 302);
       }
 
       if (expected !== query.state) {
         throw errValidation('Invalid state');
       }
-      cookie[STATE_COOKIE].remove();
+      cookie[STATE_COOKIE].set(clearedCookie);
 
       const tokens = await exchangeCode(query.code);
       const userInfo = await fetchUserInfo(tokens.access_token);
@@ -85,7 +90,7 @@ export const authPlugin = new Elysia({ prefix: '/auth' })
     g
       .use(requireAdmin)
       .post('/logout', ({ cookie }) => {
-        cookie[env.SESSION_COOKIE_NAME].remove();
+        cookie[env.SESSION_COOKIE_NAME].set(clearedCookie);
         return { ok: true };
       })
       .get('/me', ({ admin }) => ({
