@@ -1,0 +1,40 @@
+node_modules/
+.bun/
+dist/
+build/
+.output/
+.vinxi/
+.solid/
+.turbo/
+.cache/
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+logs/
+
+# editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# drizzle
+apps/api/drizzle/
+
+# coverage
+coverage/
+
+# bun lockfile (keep one — keep root lockfile)
+apps/*/bun.lockb
+packages/*/bun.lockb
+
+# claude code local
+.claude/
+
+# db dump — contains real client_secrets + tokens, never commit
+sql/db.sql

@@ -1,0 +1,52 @@
+services:
+  api:
+    image: oven/bun:1
+    container_name: ncadm_api
+    working_dir: /app
+    command: sh -c "bun install && bun run dev"
+    env_file: .env
+    environment:
+      NODE_ENV: development
+    ports:
+      - "${API_PORT:-3100}:3100"
+    volumes:
+      - ./:/app
+      - api_node_modules:/app/node_modules
+      - api_app_node_modules:/app/apps/api/node_modules
+    networks:
+      - back_db_network
+      - default
+    depends_on: []
+    restart: unless-stopped
+
+  web:
+    image: oven/bun:1
+    container_name: ncadm_web
+    working_dir: /app/apps/web
+    command: sh -c "cd /app && bun install && cd apps/web && bun run dev --host 0.0.0.0"
+    env_file: .env
+    environment:
+      NODE_ENV: development
+    ports:
+      - "${WEB_PORT:-3001}:3001"
+    volumes:
+      - ./:/app
+      - web_node_modules:/app/node_modules
+      - web_app_node_modules:/app/apps/web/node_modules
+    networks:
+      - default
+    depends_on:
+      - api
+    restart: unless-stopped
+
+networks:
+  back_db_network:
+    external: true
+  default:
+    name: ncadm_network
+
+volumes:
+  api_node_modules:
+  api_app_node_modules:
+  web_node_modules:
+  web_app_node_modules:

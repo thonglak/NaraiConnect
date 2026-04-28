@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: ncadm_api_prod
+    env_file: .env
+    environment:
+      NODE_ENV: production
+    expose:
+      - "3100"
+    networks:
+      - back_db_network
+      - reverse_proxy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: ncadm_web_prod
+    env_file: .env
+    environment:
+      NODE_ENV: production
+    expose:
+      - "3001"
+    networks:
+      - reverse_proxy
+    depends_on:
+      - api
+    restart: unless-stopped
+
+networks:
+  back_db_network:
+    external: true
+  reverse_proxy:
+    external: true
