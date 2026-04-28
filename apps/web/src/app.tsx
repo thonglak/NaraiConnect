@@ -3,9 +3,14 @@ import { FileRoutes } from '@solidjs/start/router';
 import { ErrorBoundary, Suspense } from 'solid-js';
 import './app.css';
 
+// Vite injects BASE_URL as the value of `vite.base` from app.config.ts.
+// Solid Router wants no trailing slash, e.g. "/sso_man".
+const routerBase = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
+
 export default function App() {
   return (
     <Router
+      base={routerBase}
       root={(props) => (
         <ErrorBoundary
           fallback={(err) => (
