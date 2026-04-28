@@ -11,7 +11,7 @@ services:
       - "3100"
     networks:
       - back_db_network
-      - reverse_proxy
+      - network
     restart: unless-stopped
 
   web:
@@ -25,13 +25,13 @@ services:
     expose:
       - "3001"
     networks:
-      - reverse_proxy
+      - network
     depends_on:
       - api
     restart: unless-stopped
 
 networks:
+  network:
+    driver: bridge
   back_db_network:
-    external: true
-  reverse_proxy:
     external: true
