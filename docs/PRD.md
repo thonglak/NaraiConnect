@@ -226,11 +226,11 @@ GET    /api/v1/auth-codes?clientId&userId&page&pageSize
 
 ## 8. Deployment
 
-- **Dev:** `docker compose up -d` — `api` + `web` containers join `back_db_network` (external)
+- **Dev:** `docker compose up -d` — `admin` container joins `back_db_network` (external)
 - **Staging:** ไม่มี — dev → prod ตรง ๆ
-- **Production:** VPS ที่มี reverse proxy เดิม → `apps.naraiproperty.com/sso_man`
-  - Reverse proxy route `/sso_man` → `web` container (port internal)
-  - Reverse proxy route `/sso_man/api` → `api` container
+- **Production:** VPS ที่มี reverse proxy เดิม → `apps.naraiproperty.com/connect_man`
+  - nginx route `/connect_man/` → admin container (`127.0.0.1:8000`)
+  - ดู `docker/nginx-vhost.conf` สำหรับ snippet
 - **Env vars:** ดู `.env.example`
 - **Migration:** รัน `sql/001_init.sql` มือก่อน start app ครั้งแรก (ครั้งเดียว)
 

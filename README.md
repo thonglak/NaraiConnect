@@ -50,7 +50,7 @@ docker compose exec admin php artisan route:list
 docker compose exec admin ./vendor/bin/pest             # tests
 ```
 
-## Production (apps.naraiproperty.com/sso_man/)
+## Production (apps.naraiproperty.com/connect_man/)
 
 ### 1. สร้าง `apps/admin/.env.production`
 
@@ -59,7 +59,7 @@ APP_NAME="NaraiConnect Admin"
 APP_ENV=production
 APP_DEBUG=false
 APP_KEY=                                                # generate ใหม่
-APP_URL=https://apps.naraiproperty.com/sso_man
+APP_URL=https://apps.naraiproperty.com/connect_man
 APP_TIMEZONE=Asia/Bangkok
 
 DB_CONNECTION=mariadb
@@ -81,7 +81,7 @@ OAUTH_AUTHORIZE_URL=https://apps.naraiproperty.com/connect/oauth/authorize
 OAUTH_TOKEN_URL=https://apps.naraiproperty.com/connect/oauth/authorize/token
 OAUTH_USERINFO_URL=https://apps.naraiproperty.com/connect/oauth/resource
 OAUTH_SCOPE=email
-ADMIN_OAUTH_REDIRECT_URI=https://apps.naraiproperty.com/sso_man/auth/callback
+ADMIN_OAUTH_REDIRECT_URI=https://apps.naraiproperty.com/connect_man/auth/callback
 ```
 
 ### 2. Insert prod oauth_clients row
@@ -92,7 +92,7 @@ INSERT INTO oauth_clients
 VALUES (
   'PROD_16HEX',
   'PROD_32HEX',
-  'https://apps.naraiproperty.com/sso_man/auth/callback',
+  'https://apps.naraiproperty.com/connect_man/auth/callback',
   'authorization_code', 'email',
   'NaraiConnect Admin (prod)', 1
 );
@@ -109,26 +109,19 @@ docker compose -f docker-compose.prod.yml exec admin php artisan route:cache
 docker compose -f docker-compose.prod.yml exec admin php artisan view:cache
 ```
 
-Container expose port `127.0.0.1:8000` (override ด้วย `ADMIN_PROD_PORT`)
+Container expose port `0.0.0.0:8000` (override ด้วย `ADMIN_PROD_PORT`) —
+ปกติ nginx ที่ host เป็นคนต่อมา ถ้าไม่อยาก expose ออกเน็ตให้ปิด port 8000
+ที่ firewall
 
 ### 4. nginx vhost
 
-```nginx
-location /sso_man/ {
-    rewrite ^/sso_man/(.*)$ /$1 break;
-    proxy_pass http://127.0.0.1:8000;
+ดูตัวอย่างเต็มที่ `docker/nginx-vhost.conf` — paste บล็อก `location ^~
+/connect_man/ { ... }` ลงใน server block ของ `apps.naraiproperty.com` ที่
+มีอยู่แล้ว
 
-    proxy_http_version 1.1;
-    proxy_set_header Host              $host;
-    proxy_set_header X-Real-IP         $remote_addr;
-    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-Prefix /sso_man;
-    proxy_read_timeout 60s;
-}
+```bash
+nginx -t && systemctl reload nginx
 ```
-
-`nginx -t && systemctl reload nginx`
 
 ## Project layout
 

@@ -6,9 +6,9 @@
 #   docker compose -f docker-compose.prod.yml up -d
 #
 # The host's external nginx is expected to terminate TLS and forward
-# /sso_man/* → http://localhost:${ADMIN_PROD_PORT}/.
+# /connect_man/* → http://localhost:${ADMIN_PROD_PORT}/.
 # Set APP_URL in apps/admin/.env.production accordingly
-# (e.g. https://apps.naraiproperty.com/sso_man).
+# (e.g. https://apps.naraiproperty.com/connect_man).
 
 services:
   admin:
@@ -19,7 +19,7 @@ services:
     container_name: ncadm_admin_prod
     env_file: apps/admin/.env.production
     ports:
-      - "127.0.0.1:${ADMIN_PROD_PORT:-8000}:80"
+      - "${ADMIN_PROD_PORT:-8000}:80"
     volumes:
       # Persisted between deploys: storage (logs, framework caches, sessions if file driver).
       - admin_storage:/var/www/html/storage
