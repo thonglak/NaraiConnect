@@ -1,16 +1,25 @@
 # ── Stage 1: composer (vendor without dev) ─────────────────────────────
+# BuildKit cache mount on /tmp/composer-cache so re-runs reuse downloaded
+# zips and the build survives transient Packagist hiccups.
 FROM composer:2 AS vendor
+ENV COMPOSER_HOME=/tmp/composer-home \
+    COMPOSER_CACHE_DIR=/tmp/composer-cache \
+    COMPOSER_PROCESS_TIMEOUT=600 \
+    COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
 COPY apps/admin/composer.json apps/admin/composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
+RUN --mount=type=cache,target=/tmp/composer-cache,sharing=locked \
+    composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
 COPY apps/admin/ ./
-RUN composer dump-autoload --optimize --no-dev --classmap-authoritative
+RUN --mount=type=cache,target=/tmp/composer-cache,sharing=locked \
+    composer dump-autoload --optimize --no-dev --classmap-authoritative
 
 # ── Stage 2: node (build Vite assets) ──────────────────────────────────
 FROM node:20-alpine AS assets
 WORKDIR /app
 COPY apps/admin/package.json apps/admin/package-lock.json* ./
-RUN npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm,sharing=locked \
+    (npm ci --no-audit --no-fund || npm install --no-audit --no-fund)
 COPY apps/admin/ ./
 RUN npm run build
 
