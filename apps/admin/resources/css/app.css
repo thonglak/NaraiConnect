@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+@source "../**/*.blade.php";
+@source "../**/*.js";
+@source "../../app/Livewire/**/*.php";

@@ -1,40 +1,38 @@
+# Production compose for NaraiConnect Admin (Laravel + Livewire).
+#
+# Usage:
+#   cp apps/admin/.env apps/admin/.env.production   # then edit for prod values
+#   docker compose -f docker-compose.prod.yml build admin
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# The host's external nginx is expected to terminate TLS and forward
+# /sso_man/* → http://localhost:${ADMIN_PROD_PORT}/.
+# Set APP_URL in apps/admin/.env.production accordingly
+# (e.g. https://apps.naraiproperty.com/sso_man).
+
 services:
-  api:
+  admin:
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
-    container_name: ncadm_api_prod
-    env_file: .env
-    environment:
-      NODE_ENV: production
+      dockerfile: docker/admin.prod.Dockerfile
+    image: ncadm/admin:prod
+    container_name: ncadm_admin_prod
+    env_file: apps/admin/.env.production
     ports:
-      - "127.0.0.1:3100:3100"
+      - "127.0.0.1:${ADMIN_PROD_PORT:-8000}:80"
+    volumes:
+      # Persisted between deploys: storage (logs, framework caches, sessions if file driver).
+      - admin_storage:/var/www/html/storage
     networks:
       - back_db_network
-      - network
-    restart: unless-stopped
-
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-      args:
-        APP_BASE_PATH: ${APP_BASE_PATH:-}
-        VITE_API_URL: ${VITE_API_URL:-}
-    container_name: ncadm_web_prod
-    env_file: .env
-    environment:
-      NODE_ENV: production
-    ports:
-      - "127.0.0.1:3001:3001"
-    networks:
-      - network
-    depends_on:
-      - api
+      - default
     restart: unless-stopped
 
 networks:
-  network:
-    driver: bridge
   back_db_network:
     external: true
+  default:
+    name: ncadm_prod_network
+
+volumes:
+  admin_storage:

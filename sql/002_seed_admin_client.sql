@@ -5,7 +5,7 @@
 --   1. generate a random client_id (16 hex)  e.g. openssl rand -hex 8
 --   2. generate a random client_secret (32 hex) e.g. openssl rand -hex 16
 --   3. replace the placeholders below
---   4. add the same values to .env (OAUTH_CLIENT_ID / OAUTH_CLIENT_SECRET)
+--   4. add the same values to apps/admin/.env (OAUTH_CLIENT_ID / OAUTH_CLIENT_SECRET)
 --   5. add at least one admin row to admin_users
 -- ─────────────────────────────────────────────────────────────────────────
 
@@ -16,7 +16,7 @@ VALUES
   (
     'REPLACE_CLIENT_ID',
     'REPLACE_CLIENT_SECRET',
-    'http://localhost:3100/api/v1/auth/callback',
+    'http://localhost:8000/auth/callback',
     'authorization_code',
     'email',
     'NaraiConnect Admin',

@@ -1,17 +1,25 @@
-node_modules/
-.bun/
-dist/
-build/
-.output/
-.vinxi/
-.solid/
-.turbo/
-.cache/
-
 # env
 .env
 .env.*
 !.env.example
+
+# Laravel
+/apps/admin/vendor/
+/apps/admin/node_modules/
+/apps/admin/public/build/
+/apps/admin/public/hot
+/apps/admin/storage/*.key
+/apps/admin/storage/app/private/
+/apps/admin/storage/app/public/
+/apps/admin/storage/framework/cache/data/*
+/apps/admin/storage/framework/sessions/*
+/apps/admin/storage/framework/testing/*
+/apps/admin/storage/framework/views/*
+/apps/admin/storage/logs/*
+!/apps/admin/storage/**/.gitignore
+/apps/admin/.phpunit.result.cache
+/apps/admin/.phpunit.cache
+/apps/admin/auth.json
 
 # logs
 *.log
@@ -23,15 +31,8 @@ logs/
 .vscode/
 *.swp
 
-# drizzle
-apps/api/drizzle/
-
 # coverage
 coverage/
-
-# bun lockfile (keep one — keep root lockfile)
-apps/*/bun.lockb
-packages/*/bun.lockb
 
 # claude code local
 .claude/

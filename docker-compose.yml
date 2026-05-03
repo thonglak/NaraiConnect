@@ -1,42 +1,23 @@
 services:
-  api:
-    image: oven/bun:1
-    container_name: ncadm_api
-    working_dir: /app
-    command: sh -c "bun install && bun run dev"
-    env_file: .env
-    environment:
-      NODE_ENV: development
+  admin:
+    build:
+      context: .
+      dockerfile: docker/admin.Dockerfile
+    container_name: ncadm_admin
+    working_dir: /app/apps/admin
+    command: >
+      sh -c "(npm install --no-audit --no-fund && npm run dev -- --host 0.0.0.0) &
+             php artisan serve --host=0.0.0.0 --port=8080"
     ports:
-      - "${API_PORT:-3100}:3100"
+      - "${ADMIN_PORT:-8000}:8080"
+      - "5173:5173"
     volumes:
       - ./:/app
-      - api_node_modules:/app/node_modules
-      - api_app_node_modules:/app/apps/api/node_modules
+      - admin_vendor:/app/apps/admin/vendor
+      - admin_node_modules:/app/apps/admin/node_modules
     networks:
       - back_db_network
       - default
-    depends_on: []
-    restart: unless-stopped
-
-  web:
-    image: oven/bun:1
-    container_name: ncadm_web
-    working_dir: /app/apps/web
-    command: sh -c "cd /app && bun install && cd apps/web && bun run dev --host 0.0.0.0"
-    env_file: .env
-    environment:
-      NODE_ENV: development
-    ports:
-      - "${WEB_PORT:-3001}:3001"
-    volumes:
-      - ./:/app
-      - web_node_modules:/app/node_modules
-      - web_app_node_modules:/app/apps/web/node_modules
-    networks:
-      - default
-    depends_on:
-      - api
     restart: unless-stopped
 
 networks:
@@ -46,7 +27,5 @@ networks:
     name: ncadm_network
 
 volumes:
-  api_node_modules:
-  api_app_node_modules:
-  web_node_modules:
-  web_app_node_modules:
+  admin_vendor:
+  admin_node_modules:
